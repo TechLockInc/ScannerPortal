@@ -32,22 +32,20 @@ tr:nth-child(even) {
                 <div class="alert alert-danger">{!! Session::get('failure') !!}</div>
             @endif
             <h3></h3>
-            <?php $allRoutes = \App\Route::where('gateway', $appliance->id)->get() ?>
+            <?php $allRoutes = \App\Route::where('gateway', $appliance->id)->get();  
+                function mask2cidr($mask){  
+                     $long = ip2long($mask);  
+                     $base = ip2long('255.255.255.255');  
+                     return 32-log(($long ^ $base)+1,2);       
+                }  
+            ?>
             @if ($allRoutes->first() == NULL)
                 There is not any subnet associated with this appliance.
             @else
-                <table>
-                    <tr>
-                        <th>Network Address</th>
-                        <th>Subnet Mask</th>
-                    </tr>
-                    @foreach($allRoutes as $route)
-                        <tr>
-                            <th>{{$route->subnet}}</th>
-                            <th>{{$route->mask}}</th>
-                        </tr>
-                    @endforeach
-                </table>
+            
+                @foreach($allRoutes as $route)
+                    <h5>{{$route->subnet}} / {{mask2cidr($route->mask)}}</h5>
+                @endforeach
             @endif
             <h3></h3><h3></h3>
             <h4>Add a subnet</h4>
@@ -76,5 +74,7 @@ tr:nth-child(even) {
                 </div>
             </form>
         </div>
+        <a href="{{ url('/delete_route') }}"><u>Delete a subnet?</u></a>
+
     </div>
 @endsection

@@ -17,8 +17,8 @@ class DeleteRouteController extends Controller
         $this->middleware('auth');
     }
 
-    function get(){
-    	return view('delete');
+    function index(){
+    	return view('delete_route');
     }
 
 	// Process user input
@@ -34,7 +34,7 @@ class DeleteRouteController extends Controller
 	    if ($validator->fails()) {
 	        return back()
 	            ->withInput()
-	            ->withErrors($validator->getMessages()->all());
+	            ->withErrors($validator);
 	    }
 
 	    $checkAppliance = \App\Appliance::where('client_code', $request->client_code)->first();
@@ -53,13 +53,36 @@ class DeleteRouteController extends Controller
 	        		->withInput()
 	        		->withErrors('Could not find the provide network address!');
 	    	} elseif ($checkRoute->gateway != $checkAppliance->id) { // If the gateway ID is not the same as the appliance ID. This for preventing bogus requests from hackers
+	    		$message = 'Client code did not match! The subnet ' . $checkRoute->subnet . ' is associated with ' . \App\Appliance::where('id', $checkRoute->gateway)->first()->client_code . ' appliance.';
 	    		return back()
 	        		->withInput()
-	        		->withErrors('Gateway did not match!');
-	        } else {
+	        		->withErrors($message);
+	        } else {// If everything looks good
+
+	    	/*	// Delete that route from the server's routing table
+	    		$command = 'sudo route delete -net ' . $request->network_address . ' netmask ' . $this->createNetmaskAddr($request->subnet_mask) . ' gw 10.10.10.1 dev wlx60e3270ae8eb';
+	    		$process = new Process($command);
+				$process->run();
+
+				// If the OS command could not run, return error
+				if (!$process->isSuccessful()) {
+ 				   throw new ProcessFailedException($process);
+ 				   return back()
+	        		->withInput()
+	        		->withErrors($message);
+				}*/
+
+				// Add the route to database
 	        	$checkRoute->delete();
-	        	return view('view_appliance', ['client_code'=>$request->client_code]);
+	        	return redirect()->action('ViewApplianceController@index', [$request->client_code]);
 	        }
 	    }
 	}
+
+	// Function to conver from CIDR slash notation to Subnet Mask notation
+	function createNetmaskAddr($bitcount) {
+    	$netmask = str_split(str_pad(str_pad('', $bitcount, '1'), 32, '0'), 8);
+    	foreach ($netmask as &$element) $element = bindec($element);
+    	return join('.', $netmask);
+    }
 }

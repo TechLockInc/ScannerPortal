@@ -36,5 +36,6 @@ Route::get('/view_appliance/{client_code}', 'ViewApplianceController@index');
 Route::post('/view_appliance', 'ViewApplianceController@addRoute');
 
 //Delete a route record
-Route::get('/delete_route', 'DeleteRouteController@output');
+Route::get('/delete_route', 'DeleteRouteController@index');
 
+Route::post('/delete_route', 'DeleteRouteController@output');
