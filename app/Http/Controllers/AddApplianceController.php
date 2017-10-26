@@ -31,6 +31,7 @@ class AddApplianceController extends Controller
 	        'client_name' => 'required|max:255',
 	        'tunnel' => 'required|ip',
 	        'external' => 'required|ip',
+	        'hostname' => 'required|Alpha_Num',
 	    ]);
 
 		// If validation failed, return to the form with error message
@@ -70,7 +71,24 @@ class AddApplianceController extends Controller
 	    if ($appliance != NULL){
 	    	return back()
 	        		->withInput()
-	        		->withErrors('The provided exteranl IP already exists in the database!');
+	        		->withErrors('The provided external IP already exists in the database!');
+	    }
+
+	    //Check for existing hostname
+	    $vm = \App\Vm::where('hostname', strtoupper($request->hostname))->first();
+	    if ($vm == NULL) {
+	    	return back()
+	    			->withInput()
+	        		->withErrors('Could not find the provided hostname in the database. Please check if the hostname is correct!');
+	    }
+
+	    //Check if the hostname is currently associated with any client
+	    $appliance = \App\Appliance::where('hostname', $vm->id)->first();
+	    if ($appliance != NULL) {
+	    	$message = 'The hostname ' . strtoupper($request->hostname) . ' is currently associated with ' . $appliance->client_code . '!';
+	    	return back()
+	    			->withInput()
+	        		->withErrors($message);
 	    }
 
 	    // If passing all checks, add the appliance to the database
@@ -79,6 +97,7 @@ class AddApplianceController extends Controller
 	    $appliance->client_name = $request->client_name;
 	    $appliance->tunnel = $request->tunnel;
 	    $appliance->external = $request->external;
+	    $appliance->hostname = \App\Vm::where('hostname', strtoupper($request->hostname))->first()->id;
 	    $appliance->save();
 	    $message = 'Appliance ' . strtoupper($request->client_code) . ' was added successfully!';
 	    $request->session()->flash('success', $message);

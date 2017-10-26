@@ -38,6 +38,7 @@ tr:nth-child(even) {
                                 <th>Client Name</th>
                                 <th>Tunel IP</th>
                                 <th>External IP</th>
+                                <th>Hostname</th>
                             </tr>
                             <?php $__currentLoopData = $allAppliances; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $appliance): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
@@ -45,6 +46,8 @@ tr:nth-child(even) {
                                     <th><?php echo e($appliance->client_name); ?></th>
                                     <th><?php echo e($appliance->tunnel); ?></th>
                                     <th><?php echo e($appliance->external); ?></th>
+                                    <?php $vm = \App\Vm::where('id', $appliance->hostname)->first();?>
+                                    <th><?php echo e($vm->hostname); ?></th>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </table>

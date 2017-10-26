@@ -32,6 +32,10 @@
                     <label for="external">External IP</label>
                     <input type="text" class="form-control" id="external" name="external" placeholder="xxx.xxx.xxx.xxx" value="{{ old('external') }}">
                 </div>
+                <div class="form-group">
+                    <label for="hostname">Appliance's Hostname</label>
+                    <input type="text" class="form-control" id="hostname" name="hostname" style="text-transform:uppercase;" laceholder="Appliance's Hostname" value="{{ old('hostname') }}">
+                </div>
                 <button type="submit" class="btn btn-default">Add</button>
             </form>
         </div>

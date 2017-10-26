@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAppliancesTables extends Migration
+class CreateVmsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateAppliancesTables extends Migration
      */
     public function up()
     {
-        Schema::create('appliances', function (Blueprint $table) {
+        Schema::create('vms', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('client_code');
-            $table->string('client_name');
-            $table->ipAddress('tunnel');
-            $table->ipAddress('external');
+            $table->string('hostname');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateAppliancesTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('appliances');
+        Schema::dropIfExists('vms');
     }
 }

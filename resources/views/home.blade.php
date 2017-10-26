@@ -39,6 +39,7 @@ tr:nth-child(even) {
                                 <th>Client Name</th>
                                 <th>Tunel IP</th>
                                 <th>External IP</th>
+                                <th>Hostname</th>
                             </tr>
                             @foreach($allAppliances as $appliance)
                                 <tr>
@@ -46,6 +47,8 @@ tr:nth-child(even) {
                                     <th>{{$appliance->client_name}}</th>
                                     <th>{{$appliance->tunnel}}</th>
                                     <th>{{$appliance->external}}</th>
+                                    <?php $vm = \App\Vm::where('id', $appliance->hostname)->first();?>
+                                    <th>{{$vm->hostname}}</th>
                                 </tr>
                             @endforeach
                         </table>
